@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mi Proyecto</title>
+</head>
+<body>
+  <div id="app">Cargando...</div>
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwI0cKy0s5IJ3QtEkvJ4qSupi_fibH8rDJtANfhydlNkIlTsCXBxiCoM2P8-Xv3uQih/exec";
+
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("app").innerText = JSON.stringify(data);
+      })
+      .catch(err => {
+        document.getElementById("app").innerText = "Error: " + err;
+      });
+  </script>
+</body>
+</html>
