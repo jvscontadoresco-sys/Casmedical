@@ -1,22 +1,114 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mi Proyecto</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tablero Financiero — CasMedical Casanare</title>
+<link rel="icon" href="data:,">
+<style>
+  /* ====================================================================
+     Envoltorio de GitHub Pages para el Tablero Financiero CasMedical.
+     Esta pagina no contiene el tablero: solo lo incrusta desde el
+     despliegue de Google Apps Script, para dar una URL corta y propia.
+     Cambia URL_TABLERO si vuelves a publicar el script y cambia el link.
+     ==================================================================== */
+  :root{ --azul-900:#062B4A; --azul-800:#0A4674; --azul-viv:#4183FE; --ambar:#F7A80F; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:var(--azul-900);
+    font-family:Arial, Helvetica, sans-serif}
+
+  iframe{
+    display:block;width:100vw;height:100vh;border:0;
+    opacity:0;transition:opacity .45s ease;
+  }
+  iframe.listo{opacity:1}
+
+  /* Pantalla de espera mientras el iframe carga. El tablero ya trae su
+     propio splash animado por dentro; esta capa cubre el instante previo,
+     mientras Google entrega el documento. */
+  #espera{
+    position:fixed;inset:0;z-index:5;
+    background:radial-gradient(1100px 650px at 50% 40%, var(--azul-800) 0%, var(--azul-900) 60%, #04203A 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    transition:opacity .5s ease, visibility .5s ease;
+  }
+  #espera.oculto{opacity:0;visibility:hidden;pointer-events:none}
+  #espera .aro{
+    width:52px;height:52px;border-radius:50%;
+    border:3px solid rgba(255,255,255,.16);border-top-color:var(--ambar);
+    animation:girar 1s linear infinite;
+  }
+  @keyframes girar{to{transform:rotate(360deg)}}
+  #espera p{margin-top:16px;color:#9FC0E4;font-size:12px;letter-spacing:1.6px;
+    text-transform:uppercase}
+
+  /* Aviso si el despliegue de Apps Script no responde (revocado, borrado,
+     o con "Quien tiene acceso" configurado como Solo yo). */
+  #error{
+    position:fixed;inset:0;z-index:6;display:none;
+    background:var(--azul-900);color:#fff;
+    flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px;
+  }
+  #error.on{display:flex}
+  #error h2{font-size:16px;margin-bottom:10px}
+  #error p{color:#A9C9EA;font-size:13px;max-width:440px;line-height:1.6;margin-bottom:16px}
+  #error a{
+    color:#fff;background:var(--azul-viv);padding:9px 18px;border-radius:7px;
+    text-decoration:none;font-size:12.5px;font-weight:bold;
+  }
+</style>
 </head>
 <body>
-  <div id="app">Cargando...</div>
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwI0cKy0s5IJ3QtEkvJ4qSupi_fibH8rDJtANfhydlNkIlTsCXBxiCoM2P8-Xv3uQih/exec";
 
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("app").innerText = JSON.stringify(data);
-      })
-      .catch(err => {
-        document.getElementById("app").innerText = "Error: " + err;
-      });
-  </script>
+<div id="espera"><div class="aro"></div><p>Abriendo el tablero</p></div>
+
+<div id="error">
+  <h2>No fue posible abrir el tablero</h2>
+  <p>
+    El despliegue de Google Apps Script no respondio a tiempo. Puede que el link haya
+    cambiado tras una nueva implementacion, o que el permiso de acceso este restringido.
+    Verifica en el editor de Apps Script: Implementar &rarr; Gestionar implementaciones.
+  </p>
+  <a id="reintentar" href="#">Reintentar</a>
+</div>
+
+<iframe
+  id="tablero"
+  title="Tablero Financiero CasMedical Casanare"
+  src="https://script.google.com/macros/s/AKfycbwI0cKy0s5IJ3QtEkvJ4qSupi_fibH8rDJtANfhydlNkIlTsCXBxiCoM2P8-Xv3uQih/exec"
+  allow="clipboard-write"
+  referrerpolicy="no-referrer-when-downgrade"
+></iframe>
+
+<script>
+  var frame = document.getElementById('tablero');
+  var espera = document.getElementById('espera');
+  var errorBox = document.getElementById('error');
+  var LIMITE_MS = 15000;
+
+  var listo = false;
+  function marcarListo(){
+    if(listo) return;
+    listo = true;
+    frame.classList.add('listo');
+    espera.classList.add('oculto');
+  }
+  frame.addEventListener('load', marcarListo);
+
+  // Si en 15 segundos el iframe no disparo "load", se asume que Google
+  // rechazo la conexion (por ejemplo, el despliegue no es publico) y se
+  // muestra el aviso en vez de dejar la rueda girando para siempre.
+  var vencido = setTimeout(function(){
+    if(!listo) errorBox.classList.add('on');
+  }, LIMITE_MS);
+
+  frame.addEventListener('load', function(){ clearTimeout(vencido); });
+
+  document.getElementById('reintentar').addEventListener('click', function(e){
+    e.preventDefault();
+    location.reload();
+  });
+</script>
 </body>
 </html>
