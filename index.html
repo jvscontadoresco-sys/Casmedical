@@ -2,113 +2,231 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tablero Financiero — CasMedical Casanare</title>
-<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CasMedical Casanare</title>
+<meta name="description" content="Tablero financiero, nómina y recordatorios de pago de CasMedical Casanare.">
+<meta name="theme-color" content="#062B4A">
+<!-- Aplicación instalable: Android (manifiesto) e iPhone (etiquetas de Apple) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="iconos/favicon-32.png">
+<link rel="apple-touch-icon" href="iconos/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CasMedical">
+<!-- Adelanta la conexión con Google para que las apps abran más rápido -->
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://script.googleusercontent.com">
+<link rel="dns-prefetch" href="https://n-a.script.googleusercontent.com">
 <style>
   /* ====================================================================
-     Envoltorio de GitHub Pages para el Tablero Financiero CasMedical.
-     Esta pagina no contiene el tablero: solo lo incrusta desde el
-     despliegue de Google Apps Script, para dar una URL corta y propia.
-     Cambia URL_TABLERO si vuelves a publicar el script y cambia el link.
+     CasMedical — inicio de las aplicaciones.
+     No contiene datos: solo incrusta las apps publicadas en Google Apps
+     Script. Si una app se vuelve a publicar con otro enlace, cambie su
+     URL en APPS (al final del archivo).
      ==================================================================== */
-  :root{ --azul-900:#062B4A; --azul-800:#0A4674; --azul-viv:#4183FE; --ambar:#F7A80F; }
+  :root{ --azul-900:#062B4A; --azul-800:#0A4674; --azul:#0168AD; --azul-viv:#4183FE; --ambar:#F7A80F;
+         --fondo:#F1F5FA; --linea:#DCE5EF; --tinta:#0F2233; --gris:#5C7185;
+         --arriba:env(safe-area-inset-top,0px); --abajo:env(safe-area-inset-bottom,0px); }
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;overflow:hidden;background:var(--azul-900);
-    font-family:Arial, Helvetica, sans-serif}
+  html,body{height:100%;background:var(--azul-900);font-family:Arial,Helvetica,sans-serif;-webkit-tap-highlight-color:transparent}
+  body{overflow:hidden}
 
-  iframe{
-    display:block;width:100vw;height:100vh;border:0;
-    opacity:0;transition:opacity .45s ease;
-  }
-  iframe.listo{opacity:1}
+  /* ---------------- Inicio ---------------- */
+  #inicio{position:fixed;inset:0;overflow-y:auto;background:var(--fondo);display:flex;flex-direction:column}
+  #inicio.oculto{display:none}
+  .heroe{background:radial-gradient(900px 500px at 50% 0%, var(--azul-800) 0%, var(--azul-900) 70%);
+    padding:calc(28px + var(--arriba)) 20px 46px;text-align:center;color:#fff;position:relative;overflow:hidden}
+  .heroe::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:28px;background:var(--fondo);border-radius:28px 28px 0 0}
+  .logo{display:inline-block;background:#fff;border-radius:16px;padding:12px 18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .logo img{display:block;width:230px;max-width:62vw;height:auto}
+  .heroe p{margin-top:14px;color:#A9C9EA;font-size:11px;letter-spacing:2.2px;text-transform:uppercase}
+  .tarjetas{width:min(560px,100%);margin:-8px auto 0;padding:0 16px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:2}
+  .app{display:flex;align-items:center;gap:15px;background:#fff;border:1px solid var(--linea);border-radius:14px;padding:17px 16px;
+    text-decoration:none;color:var(--tinta);box-shadow:0 1px 2px rgba(6,43,74,.06),0 6px 18px rgba(6,43,74,.07);
+    transition:transform .15s,box-shadow .15s,border-color .15s;position:relative;overflow:hidden}
+  .app:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(6,43,74,.13);border-color:#C6DDF6}
+  .app:active{transform:scale(.985)}
+  .app .ico{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    background:var(--cf);color:var(--c)}
+  .app .ico svg{width:26px;height:26px}
+  .app h2{font-size:16px;color:var(--azul-900);margin-bottom:4px}
+  .app p{font-size:12.5px;color:var(--gris);line-height:1.45}
+  .app .flecha{margin-left:auto;color:#A6BACE;font-size:24px;flex-shrink:0}
+  .instalar{width:min(560px,100%);margin:16px auto 0;padding:0 16px}
+  .instalar button,.instalar div{width:100%;border:1px dashed #B8CCE0;background:#F7FAFD;border-radius:12px;padding:13px;
+    font-size:12.5px;color:var(--azul);display:flex;gap:10px;align-items:center;justify-content:center;cursor:pointer;line-height:1.5;text-align:left}
+  .instalar div{cursor:default;color:var(--gris)}
+  .instalar b{color:var(--azul-900)}
+  .pie{margin-top:auto;padding:22px 16px calc(18px + var(--abajo));text-align:center;font-size:10.5px;color:#8FA2B4}
+  .pie b{color:var(--azul)}
 
-  /* Pantalla de espera mientras el iframe carga. El tablero ya trae su
-     propio splash animado por dentro; esta capa cubre el instante previo,
-     mientras Google entrega el documento. */
-  #espera{
-    position:fixed;inset:0;z-index:5;
-    background:radial-gradient(1100px 650px at 50% 40%, var(--azul-800) 0%, var(--azul-900) 60%, #04203A 100%);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    transition:opacity .5s ease, visibility .5s ease;
-  }
-  #espera.oculto{opacity:0;visibility:hidden;pointer-events:none}
-  #espera .aro{
-    width:52px;height:52px;border-radius:50%;
-    border:3px solid rgba(255,255,255,.16);border-top-color:var(--ambar);
-    animation:girar 1s linear infinite;
-  }
+  /* ---------------- Visor de cada app ---------------- */
+  #visor{position:fixed;inset:0;display:none;flex-direction:column;background:var(--fondo)}
+  #visor.on{display:flex}
+  .franja{height:calc(38px + var(--arriba));padding-top:var(--arriba);flex-shrink:0;display:flex;align-items:center;gap:6px;
+    background:linear-gradient(97deg,#04203A,var(--azul-900));color:#fff;padding-left:8px;padding-right:8px}
+  .franja button{background:none;border:none;color:#DCEBFB;font:12px Arial,sans-serif;cursor:pointer;display:flex;align-items:center;
+    gap:5px;padding:6px 8px;border-radius:7px}
+  .franja button:hover{background:rgba(255,255,255,.12)}
+  .franja .titulo{font-size:12px;font-weight:bold;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .franja .saltos{margin-left:auto;display:flex;gap:2px}
+  .franja .saltos button{padding:6px 9px}
+  .franja .saltos button.on{background:rgba(247,168,15,.22);color:#FFD27A}
+  .franja svg{width:17px;height:17px}
+  .marcos{flex:1;position:relative}
+  .marcos iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;visibility:hidden;transition:opacity .35s}
+  .marcos iframe.on{visibility:visible}
+  .marcos iframe.on.listo{opacity:1}
+  #espera{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    background:radial-gradient(900px 600px at 50% 40%, var(--azul-800) 0%, var(--azul-900) 65%);transition:opacity .4s,visibility .4s;z-index:3}
+  #espera.oculto{opacity:0;visibility:hidden}
+  .aro{width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.16);border-top-color:var(--ambar);animation:girar 1s linear infinite}
   @keyframes girar{to{transform:rotate(360deg)}}
-  #espera p{margin-top:16px;color:#9FC0E4;font-size:12px;letter-spacing:1.6px;
-    text-transform:uppercase}
-
-  /* Aviso si el despliegue de Apps Script no responde (revocado, borrado,
-     o con "Quien tiene acceso" configurado como Solo yo). */
-  #error{
-    position:fixed;inset:0;z-index:6;display:none;
-    background:var(--azul-900);color:#fff;
-    flex-direction:column;align-items:center;justify-content:center;
-    text-align:center;padding:30px;
-  }
+  #espera p{color:#9FC0E4;font-size:11px;letter-spacing:1.8px;text-transform:uppercase}
+  #error{position:absolute;inset:0;z-index:4;display:none;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:30px;background:var(--azul-900);color:#fff}
   #error.on{display:flex}
   #error h2{font-size:16px;margin-bottom:10px}
-  #error p{color:#A9C9EA;font-size:13px;max-width:440px;line-height:1.6;margin-bottom:16px}
-  #error a{
-    color:#fff;background:var(--azul-viv);padding:9px 18px;border-radius:7px;
-    text-decoration:none;font-size:12.5px;font-weight:bold;
-  }
+  #error p{color:#A9C9EA;font-size:13px;max-width:440px;line-height:1.6;margin-bottom:18px}
+  #error a{color:#fff;background:var(--azul-viv);padding:10px 18px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold;margin:4px}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
 <body>
 
-<div id="espera"><div class="aro"></div><p>Abriendo el tablero</p></div>
+<section id="inicio">
+  <header class="heroe">
+    <div class="logo"><img src="iconos/logo-horizontal.png" alt="CasMedical Casanare" width="300" height="86"></div>
+    <p>Gestión financiera y de personal</p>
+  </header>
 
-<div id="error">
-  <h2>No fue posible abrir el tablero</h2>
-  <p>
-    El despliegue de Google Apps Script no respondio a tiempo. Puede que el link haya
-    cambiado tras una nueva implementacion, o que el permiso de acceso este restringido.
-    Verifica en el editor de Apps Script: Implementar &rarr; Gestionar implementaciones.
-  </p>
-  <a id="reintentar" href="#">Reintentar</a>
-</div>
+  <nav class="tarjetas" aria-label="Aplicaciones">
+    <a class="app" href="#nomina" data-app="nomina" style="--c:#0168AD;--cf:#E4EFFC">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      <span><h2>Nómina</h2><p>Resumen y detalle por persona de CasMedical y OasisMed, auxiliares y novedades.</p></span>
+      <span class="flecha">›</span>
+    </a>
+    <a class="app" href="#recordatorios" data-app="recordatorios" style="--c:#F7A80F;--cf:#FEF3DA">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15l2 2 4-4"/></svg></span>
+      <span><h2>Recordatorios de pago</h2><p>Arriendos, planillas de seguridad social e impuestos con su fecha de pago.</p></span>
+      <span class="flecha">›</span>
+    </a>
+    <a class="app" href="#tablero" data-app="tablero" style="--c:#0B8F5E;--cf:#E3F6EE">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></span>
+      <span><h2>Tablero financiero</h2><p>Utilidad neta y bruta, ventas por producto, cartera y cuentas por pagar.</p></span>
+      <span class="flecha">›</span>
+    </a>
+  </nav>
 
-<iframe
-  id="tablero"
-  title="Tablero Financiero CasMedical Casanare"
-  src="https://script.google.com/macros/s/AKfycbwI0cKy0s5IJ3QtEkvJ4qSupi_fibH8rDJtANfhydlNkIlTsCXBxiCoM2P8-Xv3uQih/exec"
-  allow="clipboard-write"
-  referrerpolicy="no-referrer-when-downgrade"
-></iframe>
+  <div class="instalar" id="instalar"></div>
+  <footer class="pie">Hecho por <b>JVS Asesoría Empresarial, Contable y Financiera</b></footer>
+</section>
+
+<section id="visor" aria-live="polite">
+  <div class="franja">
+    <button id="volver" title="Volver al inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>Inicio</button>
+    <span class="titulo" id="tituloApp"></span>
+    <span class="saltos">
+      <button data-ir="nomina" title="Nómina"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="4"/><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/></svg></button>
+      <button data-ir="recordatorios" title="Recordatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></button>
+      <button data-ir="tablero" title="Tablero financiero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></button>
+    </span>
+  </div>
+  <div class="marcos" id="marcos">
+    <div id="espera"><div class="aro"></div><p id="esperaTxt">Abriendo</p></div>
+    <div id="error">
+      <h2>La aplicación no respondió</h2>
+      <p>Google tardó más de lo normal. Puede reintentar o abrirla directamente en el navegador.</p>
+      <div><a href="#" id="reintentar">Reintentar</a><a href="#" id="directo" target="_blank" rel="noopener">Abrir directamente</a></div>
+    </div>
+  </div>
+</section>
 
 <script>
-  var frame = document.getElementById('tablero');
-  var espera = document.getElementById('espera');
-  var errorBox = document.getElementById('error');
-  var LIMITE_MS = 15000;
+  /* Enlaces de las apps publicadas en Google Apps Script.
+     Nómina y Recordatorios son la misma app: el parámetro m elige la vista. */
+  var URL_NOMINA = 'https://script.google.com/macros/s/AKfycbzTxYdxL62EYFvE7h9PcpBfTnWMPKdDY3WaG3dKldLVNd5HJ_Yt3pi4zzPg6g8HvFjzOA/exec';
+  var APPS = {
+    nomina:        { t:'Nómina',                url: URL_NOMINA + '?m=nomina' },
+    recordatorios: { t:'Recordatorios de pago', url: URL_NOMINA + '?m=rec' },
+    tablero:       { t:'Tablero financiero',    url: 'https://script.google.com/macros/s/AKfycbwI0cKy0s5IJ3QtEkvJ4qSupi_fibH8rDJtANfhydlNkIlTsCXBxiCoM2P8-Xv3uQih/exec' }
+  };
+  var LIMITE_MS = 25000;
 
-  var listo = false;
-  function marcarListo(){
-    if(listo) return;
-    listo = true;
-    frame.classList.add('listo');
-    espera.classList.add('oculto');
+  var marcos = {}, actual = null, vencido = null;
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* Cada app se carga una sola vez y queda viva: volver a ella es instantáneo. */
+  function marco(k){
+    if(marcos[k]) return marcos[k];
+    var f = document.createElement('iframe');
+    f.title = APPS[k].t; f.src = APPS[k].url;
+    f.setAttribute('allow', 'clipboard-write');
+    f.addEventListener('load', function(){ f.classList.add('listo'); f._listo = true; if(actual===k) listo(); });
+    $('marcos').appendChild(f);
+    return (marcos[k] = f);
   }
-  frame.addEventListener('load', marcarListo);
+  function listo(){ clearTimeout(vencido); $('espera').classList.add('oculto'); $('error').classList.remove('on'); }
 
-  // Si en 15 segundos el iframe no disparo "load", se asume que Google
-  // rechazo la conexion (por ejemplo, el despliegue no es publico) y se
-  // muestra el aviso en vez de dejar la rueda girando para siempre.
-  var vencido = setTimeout(function(){
-    if(!listo) errorBox.classList.add('on');
-  }, LIMITE_MS);
+  function abrir(k){
+    if(!APPS[k]){ inicio(); return; }
+    actual = k;
+    try{ localStorage.setItem('cm_ultima', k); }catch(e){}
+    $('inicio').classList.add('oculto'); $('visor').classList.add('on');
+    $('tituloApp').textContent = APPS[k].t;
+    document.title = APPS[k].t + ' · CasMedical';
+    document.querySelectorAll('.saltos button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-ir')===k); });
+    var f = marco(k);
+    Object.keys(marcos).forEach(function(x){ marcos[x].classList.toggle('on', x===k); });
+    $('directo').href = APPS[k].url;
+    clearTimeout(vencido);
+    if(f._listo){ listo(); return; }
+    $('esperaTxt').textContent = 'Abriendo ' + APPS[k].t.toLowerCase();
+    $('espera').classList.remove('oculto'); $('error').classList.remove('on');
+    vencido = setTimeout(function(){ if(!f._listo) $('error').classList.add('on'); }, LIMITE_MS);
+  }
+  function inicio(){
+    actual = null;
+    $('visor').classList.remove('on'); $('inicio').classList.remove('oculto');
+    document.title = 'CasMedical Casanare';
+  }
+  function ruta(){ var k = location.hash.replace('#',''); k ? abrir(k) : inicio(); }
 
-  frame.addEventListener('load', function(){ clearTimeout(vencido); });
-
-  document.getElementById('reintentar').addEventListener('click', function(e){
-    e.preventDefault();
-    location.reload();
+  window.addEventListener('hashchange', ruta);
+  $('volver').addEventListener('click', function(){ location.hash = ''; });
+  document.querySelectorAll('.saltos button').forEach(function(b){
+    b.addEventListener('click', function(){ location.hash = b.getAttribute('data-ir'); });
   });
+  $('reintentar').addEventListener('click', function(e){
+    e.preventDefault();
+    var k = actual; if(!k) return;
+    marcos[k].remove(); delete marcos[k]; abrir(k);
+  });
+  /* Al tocar una tarjeta la app empieza a cargar de una vez (antes de soltar el dedo). */
+  document.querySelectorAll('.app').forEach(function(a){
+    var pre = function(){ marco(a.getAttribute('data-app')); };
+    a.addEventListener('pointerdown', pre, {passive:true});
+    a.addEventListener('mouseenter', pre, {passive:true});
+  });
+  ruta();
+
+  /* Instalar como aplicación */
+  var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  var instalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  var aviso = $('instalar'), diferido = null;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault(); diferido = e;
+    aviso.innerHTML = '<button id="btnInstalar"><b>Instalar CasMedical</b> en este dispositivo</button>';
+    $('btnInstalar').onclick = function(){ diferido.prompt(); diferido.userChoice.then(function(){ aviso.innerHTML=''; }); };
+  });
+  if(esIOS && !instalada){
+    aviso.innerHTML = '<div>Para tenerla como app en el iPhone: toca <b>Compartir</b> (el cuadro con la flecha) y luego <b>Agregar a inicio</b>.</div>';
+  }
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
 </script>
 </body>
 </html>
