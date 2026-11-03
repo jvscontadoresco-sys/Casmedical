@@ -2,7 +2,7 @@
    Guarda solo la pantalla de inicio y los íconos para que abra al instante.
    Las apps de Google (script.google.com) nunca se guardan: siempre se leen en vivo.
    Al publicar cambios en index.html, suba VERSION para que todos reciban la nueva. */
-var VERSION = 'casmedical-v1';
+var VERSION = 'casmedical-v2';
 var BASE = ['./', 'index.html', 'manifest.webmanifest', 'iconos/logo-horizontal.png', 'iconos/icono-192.png',
             'iconos/icono-512.png', 'iconos/apple-touch-icon.png', 'iconos/favicon-32.png'];
 

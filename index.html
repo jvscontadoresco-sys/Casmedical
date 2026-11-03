@@ -54,9 +54,8 @@
   .app p{font-size:12.5px;color:var(--gris);line-height:1.45}
   .app .flecha{margin-left:auto;color:#A6BACE;font-size:24px;flex-shrink:0}
   .instalar{width:min(560px,100%);margin:16px auto 0;padding:0 16px}
-  .instalar button,.instalar div{width:100%;border:1px dashed #B8CCE0;background:#F7FAFD;border-radius:12px;padding:13px;
+  .instalar button{width:100%;border:1px dashed #B8CCE0;background:#F7FAFD;border-radius:12px;padding:13px;
     font-size:12.5px;color:var(--azul);display:flex;gap:10px;align-items:center;justify-content:center;cursor:pointer;line-height:1.5;text-align:left}
-  .instalar div{cursor:default;color:var(--gris)}
   .instalar b{color:var(--azul-900)}
   .pie{margin-top:auto;padding:22px 16px calc(18px + var(--abajo));text-align:center;font-size:10.5px;color:#8FA2B4}
   .pie b{color:var(--azul)}
@@ -211,19 +210,13 @@
   });
   ruta();
 
-  /* Instalar como aplicación */
-  var esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
-  var instalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  /* Instalar como aplicación (Android/Chrome muestra el botón; en iPhone se agrega desde Compartir) */
   var aviso = $('instalar'), diferido = null;
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault(); diferido = e;
     aviso.innerHTML = '<button id="btnInstalar"><b>Instalar CasMedical</b> en este dispositivo</button>';
     $('btnInstalar').onclick = function(){ diferido.prompt(); diferido.userChoice.then(function(){ aviso.innerHTML=''; }); };
   });
-  if(esIOS && !instalada){
-    aviso.innerHTML = '<div>Para tenerla como app en el iPhone: toca <b>Compartir</b> (el cuadro con la flecha) y luego <b>Agregar a inicio</b>.</div>';
-  }
-
   if('serviceWorker' in navigator){
     window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
   }
